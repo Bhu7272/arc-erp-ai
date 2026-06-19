@@ -1,0 +1,162 @@
+body {
+
+  margin: 0;
+  padding: 0;
+
+  font-family: Arial, sans-serif;
+
+  background:
+    linear-gradient(
+      180deg,
+      #021b3a 0%,
+      #123c67 40%,
+      #5f93b2 75%,
+      #d8c8a2 100%
+    );
+
+  min-height: 100vh;
+}
+
+#root {
+
+  width: 100%;
+}
+
+.app-container {
+
+  padding: 30px;
+}
+
+.main-card {
+
+  max-width: 1400px;
+
+  margin: auto;
+
+  background: rgba(255,255,255,0.08);
+
+  backdrop-filter: blur(12px);
+
+  border-radius: 20px;
+
+  padding: 30px;
+
+  box-shadow:
+    0 8px 40px rgba(0,0,0,0.25);
+}
+
+.topbar {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 30px;
+}
+
+.logo-section {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+}
+
+.logo-section img {
+
+  width: 70px;
+
+  height: 70px;
+
+  border-radius: 20px;
+
+  object-fit: cover;
+}
+
+.logo-title {
+
+  font-size: 36px;
+
+  font-weight: bold;
+
+  color: white;
+}
+
+.menu-buttons button {
+
+  margin-left: 10px;
+
+  padding: 12px 20px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #ffffff22;
+
+  color: white;
+
+  cursor: pointer;
+
+  font-size: 15px;
+}
+
+.dashboard-card {
+
+  background: rgba(255,255,255,0.1);
+
+  padding: 25px;
+
+  border-radius: 15px;
+
+  color: white;
+
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.15);
+}
+
+input,
+textarea,
+select {
+
+  width: 100%;
+
+  padding: 14px;
+
+  border-radius: 10px;
+
+  border: none;
+
+  margin-bottom: 15px;
+
+  background: rgba(255,255,255,0.9);
+
+  font-size: 15px;
+}
+
+button {
+
+  padding: 12px 20px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #0b5ed7;
+
+  color: white;
+
+  cursor: pointer;
+
+  font-weight: bold;
+}
+
+h2,
+h3,
+p {
+
+  color: white;
+}
