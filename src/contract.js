@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 
 export const contractAddress =
-  "0xa3d9Fbd0edB10327ECB73D2C72622E505dF468a2";
+"0x41F886630F757C21030778A356583c81782eCb92";
 
 export const contractABI = [
 
