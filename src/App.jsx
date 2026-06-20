@@ -1691,7 +1691,16 @@ const buttonStyle = {
 <button>
 + Company
 </button>
-
+<button
+  onClick={() =>
+    window.open(
+      "https://faucet.circle.com/",
+      "_blank"
+    )
+  }
+>
+  🚰 Faucet
+</button>
 </div>
 
 </div>
