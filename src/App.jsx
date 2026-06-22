@@ -2264,47 +2264,14 @@ App Kit Status
   style={inputStyle}
 />
 
-<select
-  value={businessSector}
-  onChange={(e) =>
-    setBusinessSector(e.target.value)
+<p>
+  Company Sector:
+  {
+    companies.find(
+      c => c.name === activeCompany
+    )?.sector || "No Sector"
   }
-  style={inputStyle}
->
-
-<option value="administrative">
-Administrative
-</option>
-
-<option value="it">
-IT Company
-</option>
-
-<option value="construction">
-Construction
-</option>
-
-<option value="transport">
-Transport & Logistics
-</option>
-
-<option value="manufacturing">
-Manufacturing
-</option>
-
-<option value="retail">
-Retail & Trading
-</option>
-
-<option value="web3">
-Web3 & Blockchain
-</option>
-
-<option value="realestate">
-Real Estate
-</option>
-
-</select>
+</p>
 <select
   value={expenseCategory}
   onChange={(e) =>
@@ -2322,10 +2289,14 @@ Real Estate
 {(
 invoiceMode === "sales"
 ? incomeCategories[
-    businessSector
+    companies.find(
+      c => c.name === activeCompany
+    )?.sector
   ]
 : expenseCategories[
-    businessSector
+    companies.find(
+      c => c.name === activeCompany
+    )?.sector
   ]
 )?.map((item) => (
 
@@ -2511,6 +2482,13 @@ if (
 
 <option value="it">
   IT
+</option>
+<option value="web3">
+  Web3 & Blockchain
+</option>
+
+<option value="realestate">
+  Real Estate
 </option>
 
 </select>
