@@ -1441,6 +1441,11 @@ doc.text(
   }
 
   // Share Link
+  const companyInvoices =
+savedInvoices.filter(
+  invoice =>
+    invoice.company === activeCompany
+);
   const totalRevenue =
   savedInvoices
     .filter(
@@ -1613,6 +1618,7 @@ const booksStatus =
   totalDebits === totalCredits
     ? "Balanced"
     : "Mismatch";
+    
     const netProfit =
   totalRevenue - totalExpenses;
   const cashFlow =
