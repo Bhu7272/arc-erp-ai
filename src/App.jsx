@@ -1316,17 +1316,19 @@ let ledgerEntry = [];
 
 if (invoiceMode === "purchase") {
 
-  ledgerEntry = [
-    {
-      type: "DEBIT",
-      account: expenseCategory,
-      amount: finalAmount
-    },
-    {
-      type: "CREDIT",
-      account: "USDC Wallet",
-      amount: finalAmount
-    }
+ ledgerEntry = [
+  {
+    company: activeCompany,
+    type: "DEBIT",
+    account: expenseCategory,
+    amount: finalAmount
+  },
+   {
+  company: activeCompany,
+  type: "CREDIT",
+  account: "USDC Wallet",
+  amount: finalAmount
+}
   ];
 
 } else {
@@ -1383,11 +1385,12 @@ error.message ||
 }
 
   // Download PDF
-  function deleteInvoice(index) {
+ function deleteInvoice(invoiceHash) {
 
   const updatedInvoices =
     savedInvoices.filter(
-      (_, i) => i !== index
+      invoice =>
+        invoice.invoiceHash !== invoiceHash
     );
 
   setSavedInvoices(updatedInvoices);
@@ -1447,7 +1450,7 @@ savedInvoices.filter(
     invoice.company === activeCompany
 );
   const totalRevenue =
-  savedInvoices
+  companyInvoices
     .filter(
       invoice =>
         invoice.accountType === "Revenue"
@@ -1459,7 +1462,7 @@ savedInvoices.filter(
     );
 
 const accountsReceivable =
-  savedInvoices
+  companyInvoices
     .filter(
       inv =>
         inv.invoiceMode === "sales" &&
@@ -1472,7 +1475,7 @@ const accountsReceivable =
     );
 
 const accountsPayable =
-  savedInvoices
+  companyInvoices
     .filter(
       inv =>
         inv.invoiceMode === "purchase" &&
@@ -1483,8 +1486,8 @@ const accountsPayable =
         sum + Number(inv.amount || 0),
       0
     );
-  const totalExpenses =
-  savedInvoices
+const totalExpenses =
+  companyInvoices
     .filter(
       (invoice) =>
         invoice.accountType ===
@@ -1498,7 +1501,7 @@ const accountsPayable =
     );
 
 const totalAssets =
-  savedInvoices
+  companyInvoices
     .filter(
       (invoice) =>
         invoice.accountType ===
@@ -1518,7 +1521,7 @@ const walletAsset =
     ? "Healthy"
     : "Low Balance";
   const totalWalletSpent =
-  savedInvoices
+  companyInvoices
     .filter(
       invoice =>
         invoice.creditAccount ===
@@ -1532,7 +1535,7 @@ const walletAsset =
     );
 
 const totalInventory =
-  savedInvoices
+  companyInvoices
     .filter(
       (invoice) =>
         invoice.accountType ===
@@ -1568,17 +1571,17 @@ Math.max(
 );
 
 const paidInvoices =
-  savedInvoices.filter(
+  companyInvoices.filter(
     i => i.paymentStatus === "Paid"
   ).length;
 
 const unpaidInvoices =
-  savedInvoices.filter(
+  companyInvoices.filter(
     i => i.paymentStatus !== "Paid"
   ).length;
   
 const totalLiabilities =
-  savedInvoices
+  companyInvoices
      
   .filter(
       (invoice) =>
@@ -2065,7 +2068,7 @@ Receivables
 </div>
 <div className="dashboard-card">
   <h3>Total Invoices</h3>
-  <h2>{savedInvoices.length}</h2>
+  <h2>{companyInvoices.length}</h2>
 </div>
 <div className="dashboard-card">
   <h3>Paid Invoices</h3>
@@ -2163,8 +2166,8 @@ App Kit Status
   <div className="dashboard-card">
   <h3>Recent Transactions</h3>
 <div className="ticker">
-  {savedInvoices
-    .slice()
+ {companyInvoices
+  .slice()
     .reverse()
     .slice(0,5)
     .map((invoice,index) => (
@@ -2563,7 +2566,7 @@ if (
 
 <div className="saved-invoices-container">
 
-{savedInvoices.map((invoice, index) => (
+{companyInvoices.map((invoice) => (
 
 <div
   key={index}
@@ -2641,7 +2644,7 @@ if (
 
 <button
 onClick={() =>
-deleteInvoice(index)
+  deleteInvoice(invoice.invoiceHash)
 }
 style={buttonStyle}
 >
@@ -2842,7 +2845,7 @@ SWIFT:
 
 <h3>Revenue Ledger</h3>
 
-{savedInvoices
+{companyInvoices
 .filter(
 (invoice) =>
 invoice.accountType ===
@@ -2881,7 +2884,7 @@ className="dashboard-card"
 
 <h3>Expense Ledger</h3>
 
-{savedInvoices
+{companyInvoices
 .filter(
 (invoice) =>
 invoice.accountType ===
@@ -2926,7 +2929,7 @@ className="dashboard-card"
 
 <h3>Asset Ledger</h3>
 
-{savedInvoices
+{companyInvoices
 .filter(
 (invoice) =>
 invoice.accountType ===
@@ -2960,7 +2963,7 @@ className="dashboard-card"
 
 <h3>Inventory Ledger</h3>
 
-{savedInvoices
+{companyInvoices
 .filter(
 (invoice) =>
 invoice.accountType ===
@@ -2993,7 +2996,7 @@ className="dashboard-card"
 
 <h3>Liability Ledger</h3>
 
-{savedInvoices
+{companyInvoices
 .filter(
 (invoice) =>
 invoice.accountType ===
@@ -3075,7 +3078,7 @@ className="dashboard-card"
 
 <h3>Fixed Assets</h3>
 
-{savedInvoices
+{companyInvoices
 .filter(
 (invoice) =>
 invoice.accountType ===
@@ -3112,7 +3115,7 @@ Amount:
 
 <h3>Current Assets</h3>
 
-{savedInvoices
+{companyInvoices
 .filter(
 (invoice) =>
 invoice.accountType ===
@@ -3149,7 +3152,7 @@ Amount:
 
 <h3>Liabilities</h3>
 
-{savedInvoices
+{companyInvoices
 .filter(
 (invoice) =>
 invoice.accountType ===
@@ -3227,7 +3230,7 @@ Amount:
 
 <h3>Revenue Transactions</h3>
 
-{savedInvoices
+{companyInvoices
 .filter(
 invoice =>
 invoice.accountType ===
@@ -3254,7 +3257,7 @@ className="dashboard-card"
 
 <h3>Expense Transactions</h3>
 
-{savedInvoices
+{companyInvoices
 .filter(
 invoice =>
 invoice.accountType ===
