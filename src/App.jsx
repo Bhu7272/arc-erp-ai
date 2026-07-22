@@ -895,6 +895,7 @@ return "Fixed Asset";
 useEffect(() => {
 
   const storedCompanies =
+  
     localStorage.getItem(
       "arcCompanies"
     );
@@ -917,7 +918,22 @@ useEffect(() => {
   }
 
 }, []);
+useEffect(() => {
 
+  const storedBanks =
+    localStorage.getItem(
+      "arcBanks"
+    );
+
+  if (storedBanks) {
+
+    setBankTransactions(
+      JSON.parse(storedBanks)
+    );
+
+  }
+
+}, []);
 useEffect(() => {
 
   if (
@@ -1316,20 +1332,20 @@ let ledgerEntry = [];
 
 if (invoiceMode === "purchase") {
 
- ledgerEntry = [
+ledgerEntry = [
   {
     company: activeCompany,
     type: "DEBIT",
-    account: expenseCategory,
+    account: "USDC Wallet",
     amount: finalAmount
   },
-   {
-  company: activeCompany,
-  type: "CREDIT",
-  account: "USDC Wallet",
-  amount: finalAmount
-}
-  ];
+  {
+    company: activeCompany,
+    type: "CREDIT",
+    account: "Revenue",
+    amount: finalAmount
+  }
+];
 
 } else {
 
@@ -1551,8 +1567,18 @@ const totalInventory =
 JSON.parse(
   localStorage.getItem("arcLedger")
 ) || [];
+const companyLedger =
+  ledger.filter(
+    entry =>
+      entry.company === activeCompany
+  );
+  const companyBanks =
+  bankTransactions.filter(
+    bank =>
+      bank.company === activeCompany
+  ).reverse();
 const walletCredits =
-ledger
+companyLedger
 .filter(
   entry =>
     entry.account ===
@@ -1595,8 +1621,8 @@ const totalLiabilities =
         Number(invoice.amount || 0),
       0
     );
-  const totalDebits =
-  ledger
+ const totalDebits =
+  companyLedger
     .filter(
       entry => entry.type === "DEBIT"
     )
@@ -1607,7 +1633,7 @@ const totalLiabilities =
     );
 
 const totalCredits =
-  ledger
+  companyLedger
     .filter(
       entry => entry.type === "CREDIT"
     )
@@ -2569,7 +2595,7 @@ if (
 {companyInvoices.map((invoice) => (
 
 <div
-  key={index}
+  key={invoice.invoiceHash}
   style={{
     border: "1px solid gray",
     padding: "20px",
@@ -2771,6 +2797,8 @@ onClick={() => {
 
 const newBank = {
 
+company: activeCompany,
+
 bank: selectedBank,
 
 accountNumber:
@@ -2782,15 +2810,23 @@ swift: swiftCode,
 
 };
 
-setBankTransactions([
-...bankTransactions,
-newBank,
-]);
 
-alert(
-"Bank Added Successfully"
+setBankTransactions(
+  updatedBanks
 );
 
+localStorage.setItem(
+  "arcBanks",
+  JSON.stringify(updatedBanks)
+);
+
+alert(
+  "Bank Added Successfully"
+);
+setSelectedBank("");
+setBankAccountNumber("");
+setIfscCode("");
+setSwiftCode("");
 }}
 >
 
@@ -2801,7 +2837,7 @@ Add Bank
 <br />
 <br />
 
-{bankTransactions.map(
+{companyBanks.map(
 (bank, index) => (
 
 <div
@@ -2825,7 +2861,28 @@ IFSC:
 SWIFT:
 {bank.swift}
 </p>
+<button
+onClick={() => {
 
+const updatedBanks =
+bankTransactions.filter(
+(_, i) =>
+i !== index
+);
+
+setBankTransactions(
+updatedBanks
+);
+
+localStorage.setItem(
+"arcBanks",
+JSON.stringify(updatedBanks)
+);
+
+}}
+>
+Delete Bank
+</button>
 </div>
 
 ))
@@ -3034,7 +3091,7 @@ className="dashboard-card"
 
 <h2>General Ledger</h2>
 
-{ledger.map(
+{companyLedger.map(
 (entry,index)=>(
 
 <div
