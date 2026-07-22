@@ -160,3 +160,37 @@ p {
 
   color: white;
 }
+@media (max-width: 768px) {
+
+  .topbar {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .menu-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .menu-buttons button {
+    width: 100%;
+  }
+
+  .dashboard-card {
+    width: 100%;
+  }
+
+  .content-area {
+    padding: 10px;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+}
