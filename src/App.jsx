@@ -1868,10 +1868,45 @@ Balance Sheet
     : "0"} USDC
 </p>
 
+<div style={{ marginBottom: "20px" }}>
+
 <p>
-  <strong>Active Company:</strong>{" "}
-  {activeCompany || "No Company"}
-</p> 
+  <strong>Active Company:</strong>
+</p>
+
+<select
+  value={activeCompany}
+  onChange={(e) =>
+    setActiveCompany(
+      e.target.value
+    )
+  }
+  style={{
+    padding: "10px",
+    width: "300px"
+  }}
+>
+
+<option value="">
+Select Company
+</option>
+
+{companies.map(
+(company, index) => (
+
+<option
+key={index}
+value={company.name}
+>
+{company.name}
+</option>
+
+))
+}
+
+</select>
+
+</div>
 {activePage === "dashboard" && (
 
 <>
