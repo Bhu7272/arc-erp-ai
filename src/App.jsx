@@ -124,6 +124,20 @@ useState("");
 const [bankTransactions,
 setBankTransactions] =
 useState([]);
+const [treasuryWallets,
+setTreasuryWallets] =
+useState([]);
+
+const [walletName,
+setWalletName] =
+useState("");
+const [walletType, setWalletType] =
+useState("Treasury");
+
+const [
+  selectedTreasuryWallet,
+  setSelectedTreasuryWallet
+] = useState("");
   const [companies, setCompanies] =
   useState([]);
 
@@ -936,6 +950,22 @@ useEffect(() => {
 }, []);
 useEffect(() => {
 
+  const storedWallets =
+    localStorage.getItem(
+      "arcTreasuryWallets"
+    );
+
+  if (storedWallets) {
+
+    setTreasuryWallets(
+      JSON.parse(storedWallets)
+    );
+
+  }
+
+}, []);
+useEffect(() => {
+
   if (
     walletAddress &&
     invoiceMode === "sales"
@@ -1159,6 +1189,10 @@ notes,
 invoiceHash,
 
 blockchainTx: txHash,
+currency: "USDC",
+network: "ARC Testnet",
+chainId: "5042002",
+walletAddress,
   };
 
 
@@ -1401,6 +1435,34 @@ error.message ||
 }
 
   // Download PDF
+  async function verifyInvoice(invoiceHash) {
+
+  try {
+
+    const contract = await getContract();
+
+    const verified =
+      await contract.verifyInvoice(invoiceHash);
+
+    if (verified) {
+
+      alert("✅ Invoice Verified on ARC Blockchain");
+
+    } else {
+
+      alert("❌ Invoice Not Found");
+
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert("Verification Failed");
+
+  }
+
+}
  function deleteInvoice(invoiceHash) {
 
   const updatedInvoices =
@@ -1941,8 +2003,7 @@ value={company.name}
 <div
   style={{
     display: "grid",
-    gridTemplateColumns:
-      "repeat(auto-fit,minmax(250px,1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
     gap: "20px",
     marginBottom: "30px",
   }}
@@ -2696,12 +2757,53 @@ if (
 {" "}
 {invoice.paymentStatus || "Pending"}
 </p>
+<p>
+<strong>Currency:</strong>
+{" "}
+{invoice.currency || "USDC"}
+</p>
 
+<p>
+<strong>Network:</strong>
+{" "}
+{invoice.network || "ARC Testnet"}
+</p>
+
+<p>
+<strong>Chain ID:</strong>
+{" "}
+{invoice.chainId || "5042002"}
+</p>
 <p>
 <strong>Total Amount:</strong>
 {" "}
 {invoice.amount || 0} USDC
 </p>
+<p>
+<strong>Wallet:</strong>
+{" "}
+{invoice.walletAddress || "Not Connected"}
+</p>
+
+<p>
+<strong>Invoice Hash:</strong>
+{" "}
+{invoice.invoiceHash || "Not Available"}
+</p>
+
+<p>
+<strong>Transaction Hash:</strong>
+{" "}
+{invoice.blockchainTx || "Pending"}
+</p>
+<button
+onClick={() =>
+  verifyInvoice(invoice.invoiceHash)
+}
+style={buttonStyle}
+>
+Verify on Blockchain
+</button>
 
 <button
 onClick={() =>
@@ -2849,12 +2951,17 @@ swift: swiftCode,
 setBankTransactions(
   updatedBanks
 );
+const updatedBanks = [
+  ...bankTransactions,
+  newBank,
+];
+
+setBankTransactions(updatedBanks);
 
 localStorage.setItem(
   "arcBanks",
   JSON.stringify(updatedBanks)
 );
-
 alert(
   "Bank Added Successfully"
 );
@@ -3382,7 +3489,74 @@ className="dashboard-card"
 <>
 
 <h2>Treasury Dashboard</h2>
+<h3>Create Treasury Wallet</h3>
 
+<input
+  type="text"
+  placeholder="Wallet Name (Example: Treasury Wallet)"
+  value={walletName}
+  onChange={(e) =>
+    setWalletName(e.target.value)
+  }
+  style={inputStyle}
+/>
+<select
+  value={walletType}
+  onChange={(e) =>
+    setWalletType(e.target.value)
+  }
+  style={inputStyle}
+>
+  <option value="Treasury">Treasury Wallet</option>
+  <option value="Revenue">Revenue Wallet</option>
+  <option value="Payroll">Payroll Wallet</option>
+  <option value="Tax">Tax Wallet</option>
+  <option value="Operations">Operations Wallet</option>
+</select>
+<button
+  style={buttonStyle}
+  onClick={() => {
+
+    if (!walletName) {
+      alert("Enter Wallet Name");
+      return;
+    }
+
+    const newWallet = {
+
+company: activeCompany,
+
+name: walletName,
+
+type: walletType,
+
+address: walletAddress,
+
+};
+
+    const updatedWallets = [
+      ...treasuryWallets,
+      newWallet,
+    ];
+
+    setTreasuryWallets(updatedWallets);
+
+    localStorage.setItem(
+      "arcTreasuryWallets",
+      JSON.stringify(updatedWallets)
+    );
+
+    setWalletName("");
+
+    alert("Treasury Wallet Added");
+
+  }}
+>
+Add Wallet
+</button>
+
+<br />
+<br />
 <div className="dashboard-card">
 
 <h3>Treasury Overview</h3>
@@ -3417,7 +3591,68 @@ Payables:
 </div>
 
 <div className="dashboard-card">
+<h3>My Treasury Wallets</h3>
 
+{treasuryWallets
+  .filter(
+    wallet =>
+      wallet.company === activeCompany
+  )
+  .map((wallet, index) => (
+
+<div
+  key={index}
+  className="dashboard-card"
+  style={{ marginBottom: "15px" }}
+>
+
+<h3>{wallet.name}</h3>
+
+<p>
+<strong>Company:</strong>
+{" "}
+{wallet.company}
+</p>
+<p>
+<strong>Wallet Type:</strong>
+{" "}
+{wallet.type}
+</p>
+<p>
+<strong>Wallet Address:</strong>
+{" "}
+{wallet.address}
+</p>
+
+<p>
+<strong>Balance:</strong>
+Coming Soon
+</p>
+<button
+  style={buttonStyle}
+  onClick={() => {
+
+    const updatedWallets =
+      treasuryWallets.filter(
+        (_, i) => i !== index
+      );
+
+    setTreasuryWallets(updatedWallets);
+
+    localStorage.setItem(
+      "arcTreasuryWallets",
+      JSON.stringify(updatedWallets)
+    );
+
+    alert("Wallet Deleted");
+
+  }}
+>
+Delete Wallet
+</button>
+</div>
+
+))}
 <h3>Treasury Actions</h3>
 
 <div className="treasury-actions">
